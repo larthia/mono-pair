@@ -7,7 +7,7 @@
 {-# LANGUAGE DataKinds #-}
 
 module Data.Pair.Mono (
-    MonoPairClass(..)
+    PairClass(..)
   , swap
   , zip
   , unzip
@@ -32,58 +32,58 @@ import Codec.Serialise.Class ( Serialise(decode, encode) )
 import Codec.Serialise.Decoding (decodeListLenOf)
 import Codec.Serialise.Encoding (encodeListLen)
 
-class MonoPairClass a where
+class PairClass a where
   data Pair a :: Type
   fst  :: Pair a -> a
   snd  :: Pair a -> a
   pair :: a -> a -> Pair a
 
 
-swap :: (MonoPairClass a) => Pair a -> Pair a
+swap :: (PairClass a) => Pair a -> Pair a
 swap p = pair (snd p) (fst p)
 
 
-zip :: (MonoPairClass a) => [a] -> [a] -> [Pair a]
+zip :: (PairClass a) => [a] -> [a] -> [Pair a]
 zip = L.zipWith pair
 
 
-unzip :: (MonoPairClass a) => [Pair a] -> ([a], [a])
+unzip :: (PairClass a) => [Pair a] -> ([a], [a])
 unzip x = ( map fst x
           , map snd x
           )
 
-instance (Eq a, MonoPairClass a) => Eq (Pair a) where
+instance (Eq a, PairClass a) => Eq (Pair a) where
     x == y = fst x == fst y && snd x == snd y
 
-instance (Ord a, MonoPairClass a) => Ord (Pair a) where
+instance (Ord a, PairClass a) => Ord (Pair a) where
     x `compare` y = fst x `compare` fst y
                       <> snd x `compare` snd y
 
-instance (Semigroup a, MonoPairClass a) => Semigroup (Pair a) where
+instance (Semigroup a, PairClass a) => Semigroup (Pair a) where
         a <> b = pair (fst a <> fst b) (snd a <> snd b)
         stimes n a = pair (stimes n (fst a)) (stimes n (snd a))
 
-instance (Monoid a, MonoPairClass a) => Monoid (Pair a) where
+instance (Monoid a, PairClass a) => Monoid (Pair a) where
         mempty = pair mempty mempty
 
-instance (Show a, MonoPairClass a) => Show (Pair a) where
+instance (Show a, PairClass a) => Show (Pair a) where
     show p = "(" <> show (fst p) <> "," <> show (snd p) <> ")"
 
 
-instance (MonoPairClass a, A.ToJSON a) => A.ToJSON (Pair a) where
+instance (PairClass a, A.ToJSON a) => A.ToJSON (Pair a) where
     toJSON p = A.toJSON [ fst p , snd p ]
 
-instance (MonoPairClass a, A.FromJSON a) => A.FromJSON (Pair a) where
+instance (PairClass a, A.FromJSON a) => A.FromJSON (Pair a) where
     parseJSON v@(A.Array _) = do
       [fst, snd] <- A.parseJSON v
       return $ pair (fst :: a) (snd :: a)
     parseJSON _ = fail "Expected an Array"
 
-instance (MonoPairClass a, Show a, A.ToJSON a) => A.ToJSONKey (Pair a) where
+instance (PairClass a, Show a, A.ToJSON a) => A.ToJSONKey (Pair a) where
      toJSONKey = A.toJSONKeyText (T.pack . show . fst)
 
 
-instance (Serialise a, MonoPairClass a) => Serialise (Pair a) where
+instance (Serialise a, PairClass a) => Serialise (Pair a) where
     encode p = encodeListLen 2
                 <> encode (fst p)
                 <> encode (snd p)
@@ -92,7 +92,7 @@ instance (Serialise a, MonoPairClass a) => Serialise (Pair a) where
                 !y <- decode
                 return $ pair x y
 
-instance MonoPairClass Int where
+instance PairClass Int where
   data Pair Int =
     MonoPairInt
       {-# UNPACK #-} !Int
@@ -105,7 +105,7 @@ instance MonoPairClass Int where
   {-# INLINEABLE pair #-}
 
 
-instance MonoPairClass Integer where
+instance PairClass Integer where
   data Pair Integer =
     MonoPairInteger
       !Integer
@@ -118,7 +118,7 @@ instance MonoPairClass Integer where
   {-# INLINEABLE pair #-}
 
 
-instance MonoPairClass Bool where
+instance PairClass Bool where
   data Pair Bool =
     MonoPairBool
       !Bool
@@ -130,7 +130,7 @@ instance MonoPairClass Bool where
   pair a b = MonoPairBool a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Char where
+instance PairClass Char where
   data Pair Char =
     MonoPairChar
       {-# UNPACK #-} !Char
@@ -142,7 +142,7 @@ instance MonoPairClass Char where
   pair a b = MonoPairChar a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Float where
+instance PairClass Float where
   data Pair Float =
     MonoPairFloat
       {-# UNPACK #-} !Float
@@ -154,7 +154,7 @@ instance MonoPairClass Float where
   pair a b = MonoPairFloat a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Double where
+instance PairClass Double where
   data Pair Double =
     MonoPairDouble
       {-# UNPACK #-} !Double
@@ -166,7 +166,7 @@ instance MonoPairClass Double where
   pair a b = MonoPairDouble a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass String where
+instance PairClass String where
   data Pair String =
     MonoPairString
       !String
@@ -179,7 +179,7 @@ instance MonoPairClass String where
   {-# INLINEABLE pair #-}
 
 
-instance MonoPairClass T.Text where
+instance PairClass T.Text where
   data Pair T.Text =
     MonoPairText
       {-# UNPACK #-} !T.Text
@@ -192,7 +192,7 @@ instance MonoPairClass T.Text where
   {-# INLINEABLE pair #-}
 
 
-instance MonoPairClass Int8 where
+instance PairClass Int8 where
   data Pair Int8 =
     MonoPairInt8
       {-# UNPACK #-} !Int8
@@ -204,7 +204,7 @@ instance MonoPairClass Int8 where
   pair a b = MonoPairInt8 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Int16 where
+instance PairClass Int16 where
   data Pair Int16 =
     MonoPairInt16
       {-# UNPACK #-} !Int16
@@ -216,7 +216,7 @@ instance MonoPairClass Int16 where
   pair a b = MonoPairInt16 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Int32 where
+instance PairClass Int32 where
   data Pair Int32 =
     MonoPairInt32
       {-# UNPACK #-} !Int32
@@ -228,7 +228,7 @@ instance MonoPairClass Int32 where
   pair a b = MonoPairInt32 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Int64 where
+instance PairClass Int64 where
   data Pair Int64 =
     MonoPairInt64
       {-# UNPACK #-} !Int64
@@ -240,7 +240,7 @@ instance MonoPairClass Int64 where
   pair a b = MonoPairInt64 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Word8 where
+instance PairClass Word8 where
   data Pair Word8 =
     MonoPairWord8
       {-# UNPACK #-} !Word8
@@ -252,7 +252,7 @@ instance MonoPairClass Word8 where
   pair a b = MonoPairWord8 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Word16 where
+instance PairClass Word16 where
   data Pair Word16 =
     MonoPairWord16
       {-# UNPACK #-} !Word16
@@ -264,7 +264,7 @@ instance MonoPairClass Word16 where
   pair a b = MonoPairWord16 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Word32 where
+instance PairClass Word32 where
   data Pair Word32 =
     MonoPairWord32
       {-# UNPACK #-} !Word32
@@ -276,7 +276,7 @@ instance MonoPairClass Word32 where
   pair a b = MonoPairWord32 a b
   {-# INLINEABLE pair #-}
 
-instance MonoPairClass Word64 where
+instance PairClass Word64 where
   data Pair Word64 =
     MonoPairWord64
       {-# UNPACK #-} !Word64
