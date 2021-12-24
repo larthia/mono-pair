@@ -51,16 +51,18 @@ toStrict (f,s) = pair f s
 
 swap :: (PairClass a) => Pair a -> Pair a
 swap p = pair (snd p) (fst p)
-
+{-# INLINE swap #-}
 
 zip :: (PairClass a) => [a] -> [a] -> [Pair a]
 zip = L.zipWith pair
-
+{-# INLINE zip #-}
 
 unzip :: (PairClass a) => [Pair a] -> ([a], [a])
 unzip x = ( map fst x
           , map snd x
           )
+{-# INLINE unzip #-}
+
 
 instance (Eq a, PairClass a) => Eq (Pair a) where
     x == y = fst x == fst y && snd x == snd y
