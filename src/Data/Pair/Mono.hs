@@ -1,4 +1,3 @@
-{-# LANGUAGE UnboxedSums #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -91,6 +90,7 @@ instance (Serialise a, PairClass a) => Serialise (Pair a) where
                 !x <- decode
                 !y <- decode
                 return $ pair x y
+
 
 instance PairClass Int where
   data Pair Int =
