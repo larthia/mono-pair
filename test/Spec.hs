@@ -55,3 +55,6 @@ main = do
     putStrLn $ "CBOR: " <> show (deserialiseOrFail (serialise m2) :: Either DeserialiseFailure (M.Pair Int))
     putStrLn $ "CBOR: " <> show (deserialiseOrFail (serialise ((3,4) :: (Int, Int))) :: Either DeserialiseFailure (M.Pair Int))
     putStrLn $ "CBOR: " <> show (deserialiseOrFail (serialise ((3,2.3) :: (Int, Float))) :: Either DeserialiseFailure (M.Pair Int))
+
+    putStrLn $ "READ: " <> show (read "(1,2)" :: M.Pair Int)
+    -- putStrLn $ "READ: " <> show (read "(1,2.3)" :: M.Pair Int)
