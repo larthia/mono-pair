@@ -30,6 +30,7 @@ library:
     - vector
     - serialise
     - cborg
+    - binary
 
 tests:
   mono-pair-test:

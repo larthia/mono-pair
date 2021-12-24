@@ -32,6 +32,8 @@ import Data.Kind ( Type )
 import Codec.Serialise.Class ( Serialise(decode, encode) )
 import Codec.Serialise.Decoding (decodeListLenOf)
 import Codec.Serialise.Encoding (encodeListLen)
+import Data.Binary (Binary (..))
+import Data.Functor ( (<&>) )
 
 class PairClass a where
   data Pair a :: Type
@@ -81,6 +83,9 @@ instance (Monoid a, PairClass a) => Monoid (Pair a) where
 instance (Show a, PairClass a) => Show (Pair a) where
     show p = "(" <> show (fst p) <> "," <> show (snd p) <> ")"
 
+instance (Read a, PairClass a) => Read (Pair a) where
+  readsPrec n =  readsPrec n <&> fmap (\((x,y), s) -> (pair x y, s))
+
 
 instance (PairClass a, A.ToJSON a) => A.ToJSON (Pair a) where
     toJSON p = A.toJSON [ fst p , snd p ]
@@ -103,6 +108,10 @@ instance (Serialise a, PairClass a) => Serialise (Pair a) where
                 !x <- decode
                 !y <- decode
                 return $ pair x y
+
+instance (Binary a, PairClass a) => Binary (Pair a) where
+  put = put . toLazy
+  get = toStrict <$> get
 
 
 instance PairClass Int where
