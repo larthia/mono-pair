@@ -7,6 +7,8 @@
 
 module Data.Pair.Mono (
     PairClass(..)
+  , toLazy
+  , toStrict
   , swap
   , zip
   , unzip
@@ -36,6 +38,15 @@ class PairClass a where
   fst  :: Pair a -> a
   snd  :: Pair a -> a
   pair :: a -> a -> Pair a
+
+
+toLazy :: (PairClass a) => Pair a -> (a, a)
+toLazy p = (fst p, snd p)
+{-# INLINE toLazy #-}
+
+toStrict :: (PairClass a) => (a,a) -> Pair a
+toStrict (f,s) = pair f s
+{-# INLINE toStrict #-}
 
 
 swap :: (PairClass a) => Pair a -> Pair a
