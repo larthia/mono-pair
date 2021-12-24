@@ -1,0 +1,56 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           mono-pair
+version:        0.0.0.1
+description:    Please see the README on GitHub at <https://github.com/githubuser/maybe#readme>
+homepage:       https://github.com/larthia/mono-pair#readme
+bug-reports:    https://github.com/larthia/mono-pair/issues
+author:         Nicola Bonelli
+maintainer:     nicola@larthia.com
+copyright:      2021 Nicola Bonelli
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/larthia/mono-pair
+
+library
+  exposed-modules:
+      Data.Pair.Mono
+  other-modules:
+      Paths_mono_pair
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , cborg
+    , serialise
+    , text
+    , vector
+  default-language: Haskell2010
+
+test-suite mono-pair-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_mono_pair
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , mono-pair
+    , serialise
+  default-language: Haskell2010
