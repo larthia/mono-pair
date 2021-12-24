@@ -12,9 +12,11 @@ module Data.Pair.Mono (
   , swap
   , zip
   , unzip
+  , curry
+  , uncurry
 ) where
 
-import Prelude hiding (fst, snd, zip, unzip)
+import Prelude hiding (fst, snd, zip, unzip, curry, uncurry)
 import qualified Prelude as P (Maybe(..))
 
 import GHC.Stack.Types ( HasCallStack )
@@ -64,6 +66,16 @@ unzip x = ( map fst x
           , map snd x
           )
 {-# INLINE unzip #-}
+
+-- | Curry a function on strict mono pairs.
+curry :: (PairClass a) => (Pair a -> c) -> a -> a -> c
+curry f x y = f (pair x y)
+{-# INLINE curry #-}
+
+-- | Convert a curried function to a function on strict mono pairs.
+uncurry :: (PairClass a) => (a -> a -> c) -> Pair a -> c
+uncurry f p = f (fst p) (snd p)
+{-# INLINE uncurry #-}
 
 
 instance (Eq a, PairClass a) => Eq (Pair a) where
