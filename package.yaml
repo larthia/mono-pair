@@ -30,6 +30,7 @@ library:
     - vector
     - serialise
     - cborg
+    - store
     - binary
 
 tests:
@@ -45,3 +46,4 @@ tests:
     - aeson
     - bytestring
     - serialise
+    - store

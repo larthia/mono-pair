@@ -32,10 +32,13 @@ import Data.Monoid ()
 import Data.Semigroup ( Semigroup(stimes) )
 import Data.Kind ( Type )
 import Codec.Serialise.Class ( Serialise(decode, encode) )
+import qualified Data.Store as S
 import Codec.Serialise.Decoding (decodeListLenOf)
 import Codec.Serialise.Encoding (encodeListLen)
 import Data.Binary (Binary (..))
 import Data.Functor ( (<&>) )
+import Foreign.Storable (Storable, sizeOf)
+
 
 class PairClass a where
   data Pair a :: Type
@@ -62,7 +65,7 @@ zip :: (PairClass a) => [a] -> [a] -> [Pair a]
 zip = L.zipWith pair
 {-# INLINE zip #-}
 
--- | Unzip for stict mono pairs into a (lazy) pair of lists.
+-- | Unzip for strict mono pairs into a (lazy) pair of lists.
 unzip :: (PairClass a) => [Pair a] -> ([a], [a])
 unzip x = ( map fst x
           , map snd x
@@ -112,6 +115,11 @@ instance (PairClass a, A.FromJSON a) => A.FromJSON (Pair a) where
 
 instance (PairClass a, Show a, A.ToJSON a) => A.ToJSONKey (Pair a) where
      toJSONKey = A.toJSONKeyText (T.pack . show . fst)
+
+instance (S.Store a, Storable a, PairClass a) => S.Store (Pair a) where
+    size = S.ConstSize $ 2 * sizeOf (undefined :: a)
+    poke p = S.poke (fst p) >> S.poke (snd p)
+    peek = pair <$> S.peek <*> S.peek
 
 
 instance (Serialise a, PairClass a) => Serialise (Pair a) where

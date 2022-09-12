@@ -17,6 +17,8 @@ import qualified Data.ByteString as B
 import Codec.Serialise
     ( deserialiseOrFail, serialise, DeserialiseFailure )
 
+import qualified Data.Store as S
+
 unsafeSizeof :: a -> Int
 unsafeSizeof a =
   case unpackClosure# a of
@@ -57,4 +59,7 @@ main = do
     putStrLn $ "CBOR: " <> show (deserialiseOrFail (serialise ((3,2.3) :: (Int, Float))) :: Either DeserialiseFailure (M.Pair Int))
 
     putStrLn $ "READ: " <> show (read "(1,2)" :: M.Pair Int)
+
+    putStrLn $ "STORE: " <> show (S.decodeEx(S.encode m2) :: M.Pair Int)
+
     -- putStrLn $ "READ: " <> show (read "(1,2.3)" :: M.Pair Int)
